@@ -1,0 +1,7 @@
+# Elasticsearch configuration
+cluster.name: my-cluster
+network.host: 0.0.0.0
+http.port: 9200
+xpack.security.enabled: true  # Enable security features
+# elasticsearch.username: "elastic"
+# elasticsearch.password: "your_elastic_password"

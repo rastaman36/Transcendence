@@ -1,0 +1,290 @@
+@font-face {
+    font-family: 'Karasha';
+    src: url('./Karasha.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    display: block;
+    background-color: #d8163d;
+    font-family: 'Koulen';
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+}
+
+#app{
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#app.show {
+    opacity: 1;
+}
+.header{
+    width: 100vw;
+    display : flex;
+    justify-content: center;
+    word-spacing: 20vw;
+    font-size: 2vw;
+    border-bottom: #d8163d 2px solid;
+}
+.navbar a{
+    transition: 0.2s;
+
+    color:    #EAE8D2 ;;
+    gap: 10vw;
+    font-size: 2vw;
+    text-decoration: none;
+    font-weight: 650;
+
+}
+
+.navbar a:hover{
+    scale: 1.2;
+}
+
+.all{
+    display: flex;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    justify-content: space-between;
+    height: 100vh;
+}
+
+.all2{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cancelbtn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3vw;
+    background-color: #FF7E7E;
+    width: 10vw;
+    height: 4vw;
+    font-size: 1vw;
+    letter-spacing: .5vw;
+    border: 3px black solid;
+    text-align: center;
+    transition: .3s ease-in-out;
+}
+
+.cancelbtn:hover{
+    scale: 1.1;
+}
+
+
+
+.content{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 50vw;
+}
+
+.youimg{
+    width: 10vw;
+    border: #E9BF8D 5px solid;
+
+}
+
+.vs{
+    color: #E9BF8D;
+    font-size: 3vw;
+    font-family: 'Zen Dots', sans-serif;
+    letter-spacing: 5px;
+}
+
+.you{
+    display: flex;
+    flex-direction: column;
+}
+
+.yname{
+    display: flex;
+    justify-content: center;
+    letter-spacing: 5px;
+    font-size: 1vw;
+}
+
+
+.oponent{
+    display: flex;
+    flex-direction: column;
+
+}
+.oname{
+    display: flex;
+    justify-content: center;
+    letter-spacing: 5px;
+    font-size: 1vw;
+}
+.opoimg{
+    width: 10vw;
+    border: #E9BF8D 5px solid;
+}
+
+
+.vertical-text{
+    background: black;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    writing-mode: vertical-lr;
+    width: 5%;
+    word-spacing: 3vw;
+    letter-spacing: .2vw;
+    color: #E9BF8D;
+    border-left: #E9BF8D 2px solid;
+}
+
+.vertical-text.left{
+    transform: rotate(180deg);
+}
+
+
+
+.bottoml{
+    position: absolute;
+    bottom: 0;
+    width: 20vw;
+    left: 4.5%;
+    z-index: -99;
+    opacity: .7;
+}
+
+.topr{
+    position: absolute;
+    right: 5%;
+    z-index: -99;
+    opacity: .7;
+    width: 20vw;
+}
+
+
+.leaf{
+    position: absolute;
+    width: 1.2vw;
+    top:-100px;
+    z-index: 100;
+}
+
+.leaf.l1{
+    animation: fall 5s linear infinite;
+}
+
+@keyframes fall {
+    0% {top: 5%; transform: translateX(20vw) rotateX(100deg);}
+    100% {top: 100%; transform: translateX(5vw) rotateX(180deg);}
+    
+}
+
+.leaf.l2{
+    animation: fall2 5s linear infinite;
+    animation-delay: 1s ;
+
+}
+
+@keyframes fall2 {
+    0% {top: 5%; transform: translateX(50vw) rotateX(-90deg);}
+    100% {top: 100%; transform: translateX(70vw) rotateX(90deg);}
+    
+}
+
+
+.leaf.l3{
+    animation: fall3 5s linear infinite;
+    animation-delay: 2s ;
+
+}
+
+@keyframes fall3 {
+    0% {top: 5%; transform: translateX(5vw) rotateX(-100deg);}
+    100% {top: 100%; transform: translateX(35vw) rotateX(90deg);}
+    
+}
+
+.leaf.l4{
+    animation: fall4 5s linear infinite;
+    animation-delay: 3s ;
+
+}
+
+@keyframes fall4 {
+    0% {top: 5%; transform: translateX(15vw) rotateX(100deg);}
+    100% {top: 100%; transform: translateX(70vw) rotateX(200deg);}
+    
+}
+
+.leaf.l5{
+    animation: fall5 5s linear infinite;
+    animation-delay: 4s ;
+
+}
+
+@keyframes fall5 {
+    0% {top: 5%; transform: translateX(50vw) rotateX(20deg);}
+    100% {top: 100%; transform: translateX(50vw) rotateX(90deg);}
+    
+}
+.leaf.l6{
+    animation: fall6 5s linear infinite;
+    animation-delay: 5s ;
+
+}
+
+@keyframes fall6{
+    0% {top: 5%; transform: translateX(80vw) rotateX(90deg);}
+    100% {top: 100%; transform: translateX(45vw) rotateX(50deg);}
+    
+}
+
+.leaf.l7{
+    animation: fall7 5s linear infinite;
+    animation-delay: 6s ;
+
+}
+
+@keyframes fall7{
+    0% {top: 5%; transform: translateX(55vw) rotateX(-100deg);}
+    100% {top: 100%; transform: translateX(100vw) rotateX(90deg);}
+    
+}
+
+.leaf.l8{
+    animation: fall8 5s linear infinite;
+    animation-delay: 7s ;
+
+}
+
+@keyframes fall8{
+    0% {top: 5%; transform: translateX(90vw) rotateX(-10deg);}
+    100% {top: 100%; transform: translateX(50vw) rotateX(-90deg);}
+    
+}
+
+.leaf.l9{
+    animation: fall9 5s linear infinite;
+    animation-delay: 8s ;
+
+}
+
+@keyframes fall9{
+    0% {top: 5%; transform: translateX(10vw) rotateX(-100deg);}
+    100% {top: 100%; transform: translateX(90vw) rotateX(360deg);}
+    
+}

@@ -1,0 +1,11 @@
+Model Information:
+* title:	Dojo Matrix Drunken Wrestlers
+* source:	https://sketchfab.com/3d-models/dojo-matrix-drunken-wrestlers-a7902c72cde2447986ff89e13e78a11f
+* author:	pmonasteriop (https://sketchfab.com/pmonasteriop)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Dojo Matrix Drunken Wrestlers" (https://sketchfab.com/3d-models/dojo-matrix-drunken-wrestlers-a7902c72cde2447986ff89e13e78a11f) by pmonasteriop (https://sketchfab.com/pmonasteriop) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

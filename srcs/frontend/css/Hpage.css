@@ -1,0 +1,362 @@
+@font-face {
+    font-family: 'Karasha';
+    src: url('./Karasha.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+#app{
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#app.show {
+    opacity: 1;
+}
+
+body{
+    display: block;
+    background-color:   #FFDEB8 ;
+    font-family: 'Koulen';
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+}
+.notif{
+    display: flex;
+    align-items: center;
+}
+
+.notif-box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #E9BF8D;
+    position: absolute;
+    left: 3.5vw;
+    bottom: 4vw;
+    width: 2.5vw;
+    height: 2.5vw;
+    border-radius: 50%;
+    transition: .5s ease-in-out;
+    cursor: pointer;
+}
+
+.notif-box:hover{
+    background-color: #FFDEB8;
+    scale: 1.1;
+}
+
+.notif-icon{
+    width: 2vw;
+    /* height: 2vw; */
+}
+
+.header{
+    width: 100vw;
+    display : flex;
+    justify-content: center;
+    word-spacing: 20vw;
+    font-size: 2vw;
+    color: #E9BF8D;
+    border-bottom: #E9BF8D 2px solid;
+    background: black;
+
+}
+.navbar a{
+    transition: 0.2s;
+    color: #E9BF8D;
+
+    gap: 10vw;
+    font-size: 2vw;
+    text-decoration: none;
+    font-weight: 650;
+
+}
+
+.navbar a:hover{
+    scale: 1.2;
+}
+
+.all{
+    display: flex;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    justify-content: space-between;
+    height: 100vh;
+}
+
+
+
+.vertical-text{
+    background: black;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    writing-mode: vertical-lr;
+    width: 5.5vw;
+    word-spacing: 3vw;
+    letter-spacing: .2vw;
+    color: #E9BF8D;
+    border-left: #E9BF8D 2px solid;
+}
+
+.vertical-text.left{
+    transform: rotate(180deg);
+}
+
+
+.bottoml{
+    position: absolute;
+    bottom: 0;
+    width: 20vw;
+    left: 4%;
+    z-index: -99;
+    opacity: .7;
+}
+
+
+.search-bar{
+    position: absolute;
+    top: 1.5%;
+    right:5%;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #E9BF8D;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.search-div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 2vw;
+    height: 2vw;
+    border-radius: 10px;
+
+}
+.search-bar:hover input,
+.search-bar input:focus {
+    width: 20vw;
+    padding: 0.5vw;
+    border-radius: 0.5vw;
+    background-color: #E9BF8D;
+}
+.search-bar input{
+    width: 0;
+    outline: none;
+    border: none;
+    font-weight: 500;
+    transition: 0.5s;
+    background: transparent;
+}
+
+.search-icon{
+    width: 1.5vw;
+    height: 1.5vw;
+}
+.topr{
+    position: absolute;
+    right: 4.5%;
+    z-index: -99;
+    opacity: .7;
+    width: 20vw;
+}
+
+.samurai{
+    position: absolute;
+    left : 50%;
+    top : 40%;
+    transform: translateX(-50%);
+    z-index: -1;
+    width: 40vw;
+}
+
+.banner{
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    top: 4vw;
+    height: 100vh;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.banner .slider{
+    position: absolute;
+    width: 12vw;
+    height: 17vw;
+    top: 10%;
+    left: calc(50% - 100px);
+    transform-style: preserve-3d;
+    /* transform: perspective(1vw); */
+    animation: autoRun 10s linear infinite;
+    cursor: pointer;
+}
+
+.banner .slider:hover {
+    animation-play-state: paused; /* Pause animation on hover */
+}
+
+
+@keyframes autoRun {
+    from {
+        transform: perspective(1000px) rotateX(-16deg) rotateY(0deg);
+    }
+to{
+        transform: perspective(1000px) rotateX(-16deg) rotateY(-360deg); /* 240deg corresponds to fourth image */
+    }
+}
+
+
+.banner .slider .item {
+    clip-path: polygon(10% 0, 90% 0, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0 90%, 0 10%);
+    transition: 1s ease-in-out;
+    position: absolute;
+
+    transform: rotateY(calc((var(--position) - 1) * (269 / var(--quantity)) * 1deg))  translateZ(350px);
+}
+
+.banner .slider .item img{
+    width: 10vw;
+    object-fit: cover;
+}
+.banner .slider .p:hover{
+    scale : 1.3;
+}
+.banner .slider .v:hover{
+    scale : 1.2;
+}
+.banner .slider .l:hover{
+    scale : 1.3;
+}
+.banner .slider .b:hover{
+    scale : 1.2;
+}
+
+
+.leaf{
+    position: absolute;
+    width: 1.2vw;
+    top:-100px;
+    z-index: 100;
+}
+
+.leaf.l1{
+    animation: fall 5s linear infinite;
+}
+
+@keyframes fall {
+    0% {top: 5%; transform: translateX(20vw) rotateX(100deg);}
+    100% {top: 100%; transform: translateX(5vw) rotateX(180deg);}
+    
+}
+
+.leaf.l2{
+    animation: fall2 5s linear infinite;
+    animation-delay: 1s ;
+
+}
+
+@keyframes fall2 {
+    0% {top: 5%; transform: translateX(50vw) rotateX(-90deg);}
+    100% {top: 100%; transform: translateX(70vw) rotateX(90deg);}
+    
+}
+
+
+.leaf.l3{
+    animation: fall3 5s linear infinite;
+    animation-delay: 2s ;
+
+}
+
+@keyframes fall3 {
+    0% {top: 5%; transform: translateX(5vw) rotateX(-100deg);}
+    100% {top: 100%; transform: translateX(35vw) rotateX(90deg);}
+    
+}
+
+.leaf.l4{
+    animation: fall4 5s linear infinite;
+    animation-delay: 3s ;
+
+}
+
+@keyframes fall4 {
+    0% {top: 5%; transform: translateX(15vw) rotateX(100deg);}
+    100% {top: 100%; transform: translateX(70vw) rotateX(200deg);}
+    
+}
+
+.leaf.l5{
+    animation: fall5 5s linear infinite;
+    animation-delay: 4s ;
+
+}
+
+@keyframes fall5 {
+    0% {top: 5%; transform: translateX(50vw) rotateX(20deg);}
+    100% {top: 100%; transform: translateX(50vw) rotateX(90deg);}
+    
+}
+.leaf.l6{
+    animation: fall6 5s linear infinite;
+    animation-delay: 5s ;
+
+}
+
+@keyframes fall6{
+    0% {top: 5%; transform: translateX(80vw) rotateX(90deg);}
+    100% {top: 100%; transform: translateX(45vw) rotateX(50deg);}
+    
+}
+
+.leaf.l7{
+    animation: fall7 5s linear infinite;
+    animation-delay: 6s ;
+
+}
+
+@keyframes fall7{
+    0% {top: 5%; transform: translateX(55vw) rotateX(-100deg);}
+    100% {top: 100%; transform: translateX(100vw) rotateX(90deg);}
+    
+}
+
+.leaf.l8{
+    animation: fall8 5s linear infinite;
+    animation-delay: 7s ;
+
+}
+
+@keyframes fall8{
+    0% {top: 5%; transform: translateX(90vw) rotateX(-10deg);}
+    100% {top: 100%; transform: translateX(50vw) rotateX(-90deg);}
+    
+}
+
+.leaf.l9{
+    animation: fall9 5s linear infinite;
+    animation-delay: 8s ;
+
+}
+
+@keyframes fall9{
+    0% {top: 5%; transform: translateX(10vw) rotateX(-100deg);}
+    100% {top: 100%; transform: translateX(90vw) rotateX(360deg);}
+    
+}

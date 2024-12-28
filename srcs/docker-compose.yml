@@ -1,0 +1,375 @@
+services:
+
+  hashi_vault:
+    image: hashi_vault
+    init: true
+    build:
+      context: ./hashi_vault
+      dockerfile: Dockerfile
+    container_name: hashi_vault
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./hashi_vault/token:/root
+      - ./hashi_vault/run/add_data.py:/add_data.py
+      - vault_data:/vault/file
+    environment:
+      - VAULT_ADDR=http://127.0.0.1:8200
+      - VAULT_API_ADDR=http://0.0.0.0:8200
+    ports:
+      - "8200:8200"
+    networks:
+      - Transcend-Net
+      - elk
+    healthcheck:
+      test: ["CMD", "vault", "status", "-address=http://127.0.0.1:8200"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  auth_db:
+    image: auth_db
+    build: ./auth_db/
+    container_name: auth_db
+    volumes:
+      - ./auth_db/data/:/var/lib/postgresql/data
+      - ./hashi_vault/token/vault-root-token.txt:/run/secrets/vault-token:ro
+      - /run/secrets/postgres-password:/run/secrets/postgres-password:ro  # Ensure the password file is mounted
+    environment:
+      - VAULT_ADDR=http://hashi_vault:8200
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres-password  # Use the password file instead of passing plain text
+    networks:
+      - Transcend-Net
+      - elk
+    expose:
+      - 5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      hashi_vault:
+        condition: service_healthy
+
+  prof_db:
+    image: prof_db
+    build: ./prof_db/
+    container_name: prof_db
+    volumes:
+      - ./prof_db/data/:/var/lib/postgresql/data
+      - ./hashi_vault/token/vault-root-token.txt:/run/secrets/vault-token:ro
+      - /run/secrets/postgres-password:/run/secrets/postgres-password:ro
+      - ./prof_db/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    environment:
+      - VAULT_ADDR=http://hashi_vault:8200
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres-password
+      - PGPORT=4321
+      - POSTGRES_DB=prof_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    command: ["-c", "config_file=/etc/postgresql/postgresql.conf"]
+    networks:
+      - Transcend-Net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -p 4321"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "4321:4321"
+    depends_on:
+      auth_db:
+        condition: service_healthy
+
+  game_db:
+    image: game_db
+    build: ./game_db/
+    container_name: game_db
+    volumes:
+      - ./game_db/data/:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=$GAME_DB_USER
+      - POSTGRES_PASSWORD=$GAME_DB_PASSWORD
+      - POSTGRES_DB=$GAME_DB_NAME
+      - PGPORT=$GAME_DB_PORT
+    env_file:
+      - .env
+    init: true
+    expose:
+      - 6543
+    depends_on:
+      prof_db:
+        condition: service_healthy
+    networks:
+      - Transcend-Net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $GAME_DB_USER -d $GAME_DB_NAME -h localhost -p $GAME_DB_PORT"]
+      interval: 10m
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: on-failure
+
+  authentication:
+    image: authentication
+    build: ./authentication/
+    container_name: authentication
+    ports:
+      - "7070:7070"
+    init: true
+    volumes:
+      - ./authentication/srcs/:/files/:rw
+      - ./hashi_vault/token/vault-root-token.txt:/run/secrets/vault-token:ro
+    environment:
+      - VAULT_ADDR=http://hashi_vault:8200
+    networks:
+      - Transcend-Net
+      - elk
+    depends_on:
+      game_db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "echo", "pinging..."]
+      interval: 3s
+      timeout: 1s
+      retries: 0
+      start_period: 5s
+
+  profile:
+    image: profile
+    build: ./profile/
+    container_name: profile
+    expose:
+      - 8080
+    init: true
+    volumes:
+      - ./profile/srcs/:/files/:rw
+      - ./hashi_vault/token/vault-root-token.txt:/run/secrets/vault-token:ro
+    environment:
+      - VAULT_ADDR=http://hashi_vault:8200
+    networks:
+      - Transcend-Net
+      - elk
+    depends_on:
+      authentication:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "echo", "pinging..."]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  game:
+    image: game
+    build: ./game/
+    container_name: game
+    env_file:
+      - .env
+    volumes:
+      - ./game/srcs/:/files/:rw
+    ports:
+      - 6060:6060
+    networks:
+      - Transcend-Net
+    depends_on:
+      profile:
+        condition: service_healthy
+    init: true
+    healthcheck:
+      test: ["CMD-SHELL", "echo hi"]
+      interval: 10m
+      timeout: 5s
+      retries: 3
+      start_period: 2m
+    restart: on-failure
+
+  nginx:
+    image: nginx
+    build: ./nginx/
+    container_name: nginx
+    volumes:
+      - ./hashi_vault/token:/root:ro
+      - ./authentication/srcs/qrcodes/:/files/qrcodes/:rw
+      - ./authentication/srcs/static/:/files/static/:rw
+      - ./profile/srcs/static/:/files/static/:rw
+      - ./profile/srcs/avatars/:/files/avatars/:rw
+      - ./frontend/:/files/frontend/:rw
+    environment:
+      - VAULT_ADDR=http://hashi_vault:8200
+    ports:
+      - 443:443
+      - 1234:1234
+      - 2345:2345
+      - 3456:3456
+      - 80:80
+    networks:
+      - Transcend-Net
+    depends_on:
+      game:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 10m
+      timeout: 5s
+      retries: 3
+      start_period: 2m
+    restart: on-failure
+  
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+  #   container_name: elasticsearch
+  #   environment:
+  #     - discovery.type=single-node
+  #     - xpack.security.enabled=true
+  #     - ELASTIC_PASSWORD=your_elastic_password  # Set your Elasticsearch password here
+  #   ports:
+  #     - "9200:9200"
+  #   networks:
+  #     - elk
+  #     - Transcend-Net
+  #   depends_on:
+  #     nginx:
+  #       condition: service_healthy
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "echo hi"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
+
+  # logstash:
+  #   build:
+  #     context: ./logstash
+  #     dockerfile: Dockerfile
+  #   container_name: logstash
+  #   volumes:
+  #     - ./logstash/pipeline:/usr/share/logstash/pipeline
+  #   ports:
+  #     - "5001:5000"
+  #     - "9600:9600"
+  #   networks:
+  #     - elk
+  #     - Transcend-Net
+  #   depends_on:
+  #     elasticsearch:
+  #       condition: service_healthy
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "echo hi"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
+
+  # kibana:
+  #   image: kibana
+  #   build: ./kibana/
+  #   container_name: kibana
+  #   environment:
+  #     - VAULT_ADDR=http://hashi_vault:8200
+  #   volumes:
+  #     - ./hashi_vault/token/vault-root-token.txt:/run/secrets/vault-token:ro
+  #   ports:
+  #     - "5601:5601"
+  #   networks:
+  #     - elk
+  #     - Transcend-Net
+  #   depends_on:
+  #     elasticsearch:
+  #       condition: service_healthy
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "echo hi"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
+
+  # prometheus:
+  #   image: prometheus
+  #   build: ./prometheus/
+  #   container_name: prometheus
+  #   ports:
+  #     - 9090:9090
+  #   networks:
+  #     - Transcend-Net
+  #   command:
+  #     - '--config.file=/etc/prometheus/prometheus.yml'
+  #     - '--storage.tsdb.path=/prometheus'
+  #     - '--web.console.libraries=/etc/prometheus/console_libraries'
+  #     - '--web.console.templates=/etc/prometheus/consoles'
+  #   depends_on:
+  #     kibana:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./prometheus/tools/prometheus.yml:/etc/prometheus/prometheus.yml
+  #   init: true
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "echo hi"]
+  #     interval: 10m
+  #     timeout: 5s
+  #     retries: 3
+  #     start_period: 30s
+
+  # postgres-exporter:
+  #   image: postgres-exporter
+  #   build: ./exporters/postgres/
+  #   container_name: postgres-exporter
+  #   expose:
+  #     - 9187
+  #   networks:
+  #     - Transcend-Net
+  #   depends_on:
+  #     prometheus:
+  #       condition: service_healthy
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - DATA_SOURCE_NAME=postgresql://$AUTH_DB_USER:$AUTH_DB_PASSWORD@$AUTH_DB_NAME:$AUTH_DB_PORT/$AUTH_DB_NAME?sslmode=disable,postgresql://$PROF_DB_USER:$PROF_DB_PASSWORD@$PROF_DB_NAME:$PROF_DB_PORT/$PROF_DB_NAME?sslmode=disable
+  #   init: true
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "echo hi"]
+  #     interval: 10m
+  #     timeout: 5s
+  #     retries: 3
+  #     start_period: 30s
+
+  # grafana:
+  #   image: grafana
+  #   build: ./grafana/
+  #   container_name: grafana
+  #   environment:
+  #     - GF_SECURITY_ADMIN_USER=$GRAFANA_USER
+  #     - GF_SECURITY_ADMIN_PASSWORD=$GRAFANA_PASSWORD
+  #     - GF_USERS_ALLOW_SIGN_UP=false
+  #     - GF_PROVISIONING_ENABLED=true
+  #   volumes:
+  #     - ./grafana/tools/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+  #     - ./grafana/tools/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml
+  #     - ./grafana/dashboards/:/var/lib/grafana/dashboards/
+  #   ports:
+  #     - 3000:3000
+  #   networks:
+  #     - Transcend-Net
+  #   depends_on:
+  #     prometheus:
+  #       condition: service_healthy
+  #   init: true
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "echo hi"]
+  #     interval: 10m
+  #     timeout: 5s
+  #     retries: 3
+  #     start_period: 30s
+
+networks:
+  Transcend-Net:
+    name: Transcend-Net
+  elk:
+    driver: bridge
+
+volumes:
+  vault_data:
+  esdata:
+    driver: local
+
+secrets:
+  vault-token:
+    file: ./hashi_vault/token/vault-root-token.txt

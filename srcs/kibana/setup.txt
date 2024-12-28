@@ -1,0 +1,5 @@
+Go to "Management" > "Stack Management" > "Index Patterns".
+Create a new index pattern with the pattern logstash-*.
+Go to "Discover" in the main menu.
+Select your logstash-* index pattern.
+You should see logs from your Django application.

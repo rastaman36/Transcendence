@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament Bracket</title>
+    <link href="https://fonts.googleapis.com/css2?family=Koulen&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Dots&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/tournoi.css"> <!-- External CSS -->
+</head>
+<body>
+    <div class="container">
+        <div class="vertical-text left">YUSEF  -  YACINE  -  MOHAMMED  -  KAMAL</div>
+        <img class="bottoml" src="../images/bottom_left.png">
+        <div class="form-content">
+            <h1 class="bracket-title">Tournament Bracket</h1>
+            <div class="theme theme-dark">
+                <div class="bracket disable-image">
+                    <!-- Round 1 -->
+                    <div class="column one">
+                        <div class="match">
+                            <div class="match-top team" id="round1-player1">
+                                <span class="name" id="player1-name">Player 1</span>
+                                <span class="score" id="score1">4</span>
+                            </div>
+                            <div class="match-bottom team" id="round1-player2">
+                                <span class="name" id="player2-name">Player 2</span>
+                                <span class="score" id="score2">2</span>
+                            </div>
+                            <div class="match-lines">
+                                <div class="line one"></div>
+                                <div class="line two"></div>
+                            </div>
+                        </div>
+                        <div class="match">
+                            <div class="match-top team" id="round1-player3">
+                                <span class="name" id="player3-name">Player 3</span>
+                                <span class="score" id="score3">1</span>
+                            </div>
+                            <div class="match-bottom team" id="round1-player4">
+                                <span class="name" id="player4-name">Player 4</span>
+                                <span class="score" id="score4">4</span>
+                            </div>
+                            <div class="match-lines">
+                                <div class="line one"></div>
+                                <div class="line two"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Round 2 -->
+                    <div class="column two">
+                        <div class="match">
+                            <div class="match-top team" id="round2-player1">
+                                <span class="name" id="round2-name1">Player 2</span>
+                                <span class="score" id="round2-score1">0</span>
+                            </div>
+                            <div class="match-bottom team" id="round2-player2">
+                                <span class="name" id="round2-name2">Player 4</span>
+                                <span class="score" id="round2-score2">0</span>
+                            </div>
+                            <div class="match-lines">
+                                <div class="line one"></div>
+                                <div class="line two"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Final Round -->
+                    <div class="column three final-round">
+                        <div class="match">
+                            <div class="winner-header">WINNER</div>
+                            <div class="match-top team" id="final-player1">
+                                <span class="name" id="final-name1">Winner</span> <!-- This will be dynamically updated -->
+                                <span class="score" id="final-score1">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <img class="topr" src="../images/top_right.png">
+        <div class="vertical-text right">YUSEF  -  YACINE  -  MOHAMMED  -  KAMAL</div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Fetch the tournament JSON data
+            fetch("http://localhost:8000/structure/tournament.json")
+                .then(response => response.json())
+                .then(data => {
+                    // Update Round 1 player names and scores
+                    const round1 = data.rounds.round1;
+                    document.getElementById('player1-name').textContent = round1[0].name;
+                    document.getElementById('score1').textContent = round1[0].score;
+    
+                    document.getElementById('player2-name').textContent = round1[1].name;
+                    document.getElementById('score2').textContent = round1[1].score;
+    
+                    document.getElementById('player3-name').textContent = round1[2].name;
+                    document.getElementById('score3').textContent = round1[2].score;
+    
+                    document.getElementById('player4-name').textContent = round1[3].name;
+                    document.getElementById('score4').textContent = round1[3].score;
+    
+                    // Determine winners for Round 1
+                    const round1Winners = [
+                        round1[0].score > round1[1].score ? round1[0].name : round1[1].name,
+                        round1[2].score > round1[3].score ? round1[2].name : round1[3].name
+                    ];
+    
+                    // Update Round 2 player names and scores
+                    const round2 = data.rounds.round2;
+                    document.getElementById('round2-name1').textContent = round2[0].name;
+                    document.getElementById('round2-score1').textContent = round2[0].score;
+    
+                    document.getElementById('round2-name2').textContent = round2[1].name;
+                    document.getElementById('round2-score2').textContent = round2[1].score;
+    
+                    // Determine winner for Round 2
+                    const round2Winner =
+                        round2[0].score > round2[1].score ? round2[0].name : round2[1].name;
+    
+                    // Update Final Round with the winner and score
+                    const final = data.rounds.final;
+                    document.getElementById('final-name1').textContent = final.name;
+                    document.getElementById('final-score1').textContent = final.score;
+                })
+                .catch(error => console.error("Error loading tournament data:", error));
+        });
+        </script>
+</body>
+</html>
